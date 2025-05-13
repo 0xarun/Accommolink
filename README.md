@@ -25,8 +25,8 @@ Accommolink is a community-driven web app designed to simplify the housing searc
 ### Setup
 
 ```bash
-git clone https://github.com/yourusername/accommolink.git
-cd accommolink
+git clone https://github.com/0xarun/Accommolink.git
+cd Accommolink
 pip install -r requirements.txt
 python manage.py runserver
 ```
