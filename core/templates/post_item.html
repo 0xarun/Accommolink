@@ -1,0 +1,37 @@
+<div id="post-{{ post.id }}" class="post">
+    <div class="post-header">
+      <img src="{{ post.user.userprofile.profile_picture.url }}" alt="{{ post.user.get_full_name }}" class="profile-pic-small">
+      <div class="post-info">
+        <h3>{{ post.user.get_full_name }}</h3>
+        <p>{{ post.user.userprofile.university }}</p>
+      </div>
+      {% if post.user == user %}
+        <div class="action-menu">
+          <span class="three-dots">⋮</span>
+          <div class="menu-items" style="display: none;">
+            <button class="btn-edit" data-post-id="{{ post.id }}">Edit</button>
+            <button class="btn-delete" data-post-id="{{ post.id }}">Delete</button>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    
+    <div class="post-content">{{ post.content }}</div>
+    
+    {% if post.image %}
+      <img src="{{ post.image.url }}" alt="Post image" class="post-image">
+    {% endif %}
+    
+    <div class="post-actions">
+      <button class="btn-reply" data-post-id="{{ post.id }}">Reply</button>
+    </div>
+    
+    <div class="replies-container">
+      <div class="top-level-replies"></div>
+      {% if post.replies.count > 0 %}
+        <button class="btn-load-replies" data-post-id="{{ post.id }}" data-offset="0">
+          Load replies ({{ post.replies.count }})
+        </button>
+      {% endif %}
+    </div>
+  </div>

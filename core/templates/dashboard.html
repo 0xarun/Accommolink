@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - accommolink</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="navbar">
+            <div class="navbar-left">
+              <img src="{% static 'images/accommolink.png' %}" alt="Logo" class="logo">
+            </div>
+            <div class="navbar-right">
+                <div class="profile-dropdown">
+                    <button id="profile-dropdown-btn" class="profile-button">
+                      <img src="{{ user.userprofile.profile_picture.url }}" class="profile-icon">
+                      <span class="user-name">{{ user.get_full_name }}</span>
+                    </button>
+                    
+                    <div id="profile-dropdown-content" class="dropdown-content">
+                        <a href="#" id="settings-link">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                        <a href="/accounts/logout/">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                  </div>
+            </div>
+        </nav>
+        
+        <!-- Add this modal for the settings page -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Profile Settings</h2>
+                <form id="edit-profile-form">
+                    <label for="bio">Bio:</label>
+                    <textarea id="bio" name="bio">{{ user.userprofile.bio }}</textarea>
+                    
+                    <label for="university">University:</label>
+                    <input type="text" id="university" name="university" value="{{ user.userprofile.university }}">
+                    
+                    <label for="profile-picture">Profile Picture:</label>
+                    <input type="file" id="profile-picture" name="profile_picture">
+                    
+                    <button type="submit">Save Changes</button>
+                </form>
+            </div>
+        </div>
+        <div class="container">
+        <aside class="sidebar left-sidebar">
+            <h3>Forums</h3>
+            <ul>
+                <li><a href="{% url 'create_forum' %}">Create Forum</a></li>
+                <li><a href="{% url 'forum_list' %}">Browse Forums</a></li>
+            </ul>
+        </aside>
+
+
+
+        <main>
+            <section class="content">
+                <div class="create-post">
+                    <textarea id="new-post-content" placeholder="What's on your mind?"></textarea>
+                    <div class="post-actions">
+                        <div class="file-input-wrapper">
+                            <button class="btn">Choose File</button>
+                            <input type="file" id="new-post-image" accept="image/*">
+                        </div>
+                        <button id="create-post-btn" class="btn btn-primary">Create Post</button>
+                    </div>
+                </div>
+
+                <div id="posts-container">
+                    {% for post in posts %}
+                          {% include "post_item.html" with post=post %}
+                    {% endfor %}
+                </div>
+                        <div class="replies">
+                            {% for reply in post.top_level_replies|slice:":3" %}
+                            <div id="reply-{{ reply.id }}" class="reply">
+                                    <img src="{{ reply.user.userprofile.profile_picture.url }}" alt="{{ reply.user.username }}" class="reply-profile-pic">
+                                    <span class="reply-user-name">{{ reply.user.username }}</span>
+                                    <p>{{ reply.content }}</p>
+                                    {% if reply.user == user %}
+                                        <div class="action-menu">
+                                            <button class="three-dots">⋮</button>
+                                            <div class="menu-items" style="display: none;">
+                                                <button class="btn-edit-reply" data-reply-id="{{ reply.id }}">Edit</button>
+                                                <button class="btn-delete-reply" data-reply-id="{{ reply.id }}">Delete</button>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    {% if reply.child_count > 0 %}
+                                    <button class="btn-show-thread" data-reply-id="{{ reply.id }}">
+                                        <i class="fas fa-reply"></i> {{ reply.child_count }}
+                                    </button>
+                                    {% endif %}
+
+                                    <button class="btn-reply" data-post-id="{{ post.id }}" data-parent-id="{{ reply.id }}">Reply</button>
+
+                                    {% if reply.children.exists %}
+                                        <div class="nested-replies" >
+                                            {% include "reply_tree.html" with replies=reply.children.all %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if post.replies.count > 3 %}
+                            <button class="btn-load-replies" data-post-id="{{ post.id }}" data-offset="3">Load more replies</button>
+                        {% endif %}
+                    </article>
+            </section>
+        </main>
+        
+        <aside class="sidebar right-sidebar">
+            <h2>Company</h2>
+            <ul>
+                <li><a href="#">Terms and Conditions</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            <img src="{% static 'images/accommolink.png' %}" alt="Logo" class="logo">
+            <h3>Accommolink</h3>
+        </aside>
+        </div>
+    </div>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>

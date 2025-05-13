@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/forum.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="{% static 'images/accommolink.png' %}" alt="Logo" class="logo">
+        </div>
+        <div class="navbar-right">
+            <div class="profile-dropdown">
+                <button id="profile-dropdown-btn" class="profile-button">
+                  <img src="{{ user.userprofile.profile_picture.url }}" class="profile-icon">
+                  <span class="user-name">{{ user.get_full_name }}</span>
+                </button>
+                
+                <div id="profile-dropdown-content" class="dropdown-content">
+                    <a href="#" id="settings-link">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <a href="/accounts/logout/">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+              </div>
+        </div>
+    </nav>
+    <div class="forum-container">
+        <div class="forum-sidebar">
+            <h3>All Forums</h3>
+            <ul>
+                {% for other_forum in all_forums %}
+                    <li>
+                        <a href="{% url 'forum_detail' forum_slug=other_forum.slug %}">
+                            {{ other_forum.title }} ({{ other_forum.post_count }})
+                        </a>
+                    </li>
+                {% empty %}
+                    <li>No forums found</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="post">
+        <h1>{{ forum.name }}</h1>
+        <p>{{ forum.description }}</p>
+    
+        <div class="create-post">
+            <textarea id="new-post-content" placeholder="What's on your mind?"></textarea>
+            <input type="file" id="new-post-image" accept="image/*">
+            <button id="create-post-btn">Create Post</button>
+        </div>
+    
+        <div id="posts-container">
+            {% for post in page_obj %}
+                {% include 'post_item.html' with post=post %}
+            {% endfor %}
+        </div>
+    
+    {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Previous</a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="current-page">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="page-link">Next &raquo;</a>
+            {% endif %}
+        </div>
+    {% endif %}
+        </div>
+        <!-- Right sidebar (from dashboard layout) -->
+        <div class="sidebar">
+            <h2>Company</h2>
+            <ul>
+                <li><a href="#">Terms and Conditions</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            <img src="{% static 'images/accommolink.png' %}" alt="Logo" class="logo">
+            <h3>Accommolink</h3>
+        </div>
+    </div>
+    <script src="{% static 'js/forum.js' %}"></script>
+
+</body>
+</html>

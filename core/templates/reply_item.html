@@ -1,0 +1,30 @@
+<div id="reply-{{ reply.id }}" class="reply" data-depth="{{ depth|default:0 }}">
+    <div class="reply-header">
+      <img src="{{ reply.user.userprofile.profile_picture.url }}" alt="{{ reply.user.username }}" class="reply-profile-pic">
+      <span class="reply-user-name">{{ reply.user.username }}</span>
+      <span class="reply-date">{{ reply.created_at|date:"F d, Y H:i" }}</span>
+    </div>
+    
+    {% if reply.parent %}
+      <div class="replying-to">
+        Replying to @{{ reply.parent.user.username }}
+      </div>
+    {% endif %}
+    
+    <div class="reply-content">{{ reply.content }}</div>
+    
+    <div class="reply-actions">
+      <button class="btn-reply" data-post-id="{{ reply.post.id }}" data-parent-id="{{ reply.id }}">Reply</button>
+      {% if reply.user == user %}
+        <button class="btn-edit-reply" data-reply-id="{{ reply.id }}">Edit</button>
+        <button class="btn-delete-reply" data-reply-id="{{ reply.id }}">Delete</button>
+      {% endif %}
+      {% if reply.child_count > 0 %}
+        <button class="btn-show-thread" data-reply-id="{{ reply.id }}" data-reply-count="{{ reply.child_count }}">
+          Show replies ({{ reply.child_count }})
+        </button>
+      {% endif %}
+    </div>
+    
+    <div class="nested-replies" style="display: none;"></div>
+  </div>
